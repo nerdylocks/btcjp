@@ -1,5 +1,6 @@
-var http = require('http');
-var https = require('https');
+var http = require('http'),
+    https = require('https'),
+    txnObject = require('../factory/txn.js');
 
 exports.getTxn = function(req, response, next){
 
@@ -9,16 +10,10 @@ exports.getTxn = function(req, response, next){
     };
 
     var req = https.get(blockchainOptions.host + blockchainOptions.path, function(res){
-        var Transaction = function(options){
-            this.address = options.address;
-            this.total_received = options.total_received;
-            this.time_stamp = new Date(options.time_stamp);
-        };
-
         res.on('data', function(chunk){
             var rawData = JSON.parse(chunk);
 
-            var txn = new Transaction({
+            var txn = new txnObject.Transaction({
                 address: rawData["address"],
                 total_received: rawData["total_received"],
                 time_stamp: rawData["txs"][0]["time"]
