@@ -8,10 +8,6 @@ var app = express();
 var port = 3000;
 var http = require('http');
 var https = require('https');
-/*
- * Use Handlebars for templating
- */
-
 
 // For gzip compression
 app.use(express.compress());
@@ -36,13 +32,13 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(__dirname + '/assets'));
 }
 
-var rest = require('./services/rest.js');
+var txn = require('./factory/txn.js');
 
 /*
  * Routes
  */
 // Index Page
-app.get('/:address', rest.getTxn);
+app.get('/:address', txn.output);
 
 /*
  * Start it up
