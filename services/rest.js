@@ -34,6 +34,6 @@ exports.getTxn = function(req, response, next){
     });
 
     req.on('error', function(error){
-        console.log('ERROR ' + error.message);
+        response.send({status: 500, message: "Internal Error"});
     });
 };
