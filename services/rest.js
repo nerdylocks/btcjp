@@ -23,10 +23,11 @@ exports.getTxn = function(req, response, next){
                 total_received: rawData["total_received"],
                 time_stamp: rawData["txs"][0]["time"]
             });
+
             if(res.statusCode == 200){
                 response.send({status: res.statusCode, data: txn});
             } else {
-                response.send({status: 500});
+                response.send({status: 500, message: "Internal Error"});
             }
         });
 
