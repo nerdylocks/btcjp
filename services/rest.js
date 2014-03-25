@@ -4,12 +4,14 @@ var http = require('http'),
 
 exports.getTxn = function(req, response, next){
 
+    //12JMQyFbsdNuQBu5wwbpUFURsfLVq9Am17
+
     var blockchainOptions = {
         host: 'https://blockchain.info',
-        path: '/address/12JMQyFbsdNuQBu5wwbpUFURsfLVq9Am17?format=json'
+        path: '/address/'
     };
 
-    var req = https.get(blockchainOptions.host + blockchainOptions.path, function(res){
+    var req = https.get(blockchainOptions.host + blockchainOptions.path + req.params.address + '?format=json', function(res){
         res.on('data', function(chunk){
             var rawData = JSON.parse(chunk);
 

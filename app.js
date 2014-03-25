@@ -42,7 +42,7 @@ var rest = require('./services/rest.js');
  * Routes
  */
 // Index Page
-app.get('/', rest.getTxn);
+app.get('/:address', rest.getTxn);
 
 /*
  * Start it up
