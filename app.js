@@ -11,8 +11,7 @@ var https = require('https');
 /*
  * Use Handlebars for templating
  */
-var exphbs = require('express3-handlebars');
-var hbs;
+
 
 // For gzip compression
 app.use(express.compress());
@@ -22,11 +21,11 @@ app.use(express.compress());
  */
 if (process.env.NODE_ENV === 'production') {
     // Set the default layout and locate layouts and partials
-    app.engine('handlebars', exphbs({
-        defaultLayout: 'main',
-        layoutsDir: 'dist/views/layouts/',
-        partialsDir: 'dist/views/partials/'
-    }));
+    // app.engine('handlebars', exphbs({
+    //     defaultLayout: 'main',
+    //     layoutsDir: 'dist/views/layouts/',
+    //     partialsDir: 'dist/views/partials/'
+    // }));
 
     // Locate the views
     app.set('views', __dirname + '/dist/views');
@@ -35,12 +34,12 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(__dirname + '/dist/assets'));
 
 } else {
-    app.engine('handlebars', exphbs({
-        // Default Layout and locate layouts and partials
-        defaultLayout: 'main',
-        layoutsDir: 'views/layouts/',
-        partialsDir: 'views/partials/'
-    }));
+    // app.engine('handlebars', exphbs({
+    //     // Default Layout and locate layouts and partials
+    //     defaultLayout: 'main',
+    //     layoutsDir: 'views/layouts/',
+    //     partialsDir: 'views/partials/'
+    // }));
 
     // Locate the views
     app.set('views', __dirname + '/views');
