@@ -1,23 +1,30 @@
 var http = require('http'),
     https = require('https');
 
-//TODO: Finish generalizing REST calls
-exports.getJson = function(url, onSuccess){
+module.exports.getJson = function(url, onSuccess){
     var req = https.get(url, function(res){
-        var rawData;
+        var rawData = '';
+        res.setEncoding('utf8');
+        var _obj;
 
         res.on('data', function(chunk){
-            rawData = JSON.parse(chunk);            
+            rawData += chunk;            
         });
 
         res.on('end', function(){
-            onSuccess(res.statusCode, rawData);
+            try {
+                _obj = JSON.parse(rawData);
+                onSuccess(res.statusCode, _obj);
+            } catch (e){
+                console.log(e);
+            }
             console.log("getJson::DONE");
         });
+
     });
 
     req.on('error', function(error){
-        console.log({status: 500, message: "Internal Error"});
+        console.log("Error 500: Internal Error");
     });
 
     req.end();

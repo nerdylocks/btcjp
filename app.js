@@ -6,8 +6,6 @@
 var express = require('express');
 var app = express();
 var port = 3000;
-var http = require('http');
-var https = require('https');
 
 // For gzip compression
 app.use(express.compress());
