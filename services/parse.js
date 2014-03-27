@@ -1,21 +1,22 @@
 var rest = require('../services/rest.js');
 
-var blockchainOptions = {
-    host: 'https://blockchain.info'
+var EndpointBuilder = {
+	host: 'https://blockchain.info',
+	allInfoByAddress: function(address){
+		return this.host + '/address/' + address + '?format=json';
+	},
+	getReceivedUrl: function(address, confirmations) {
+		return this.host + '/q/getreceivedbyaddress/' + address + '?confirmations=' + confirmations + '&format=json';
+	}
 };
 
-var buildUrl = function(path){
-	return blockchainOptions.host + '/' + path + '/';
-};
-
-module.exports.getTxnDetails = function(options, txnHash, onResult){
-	var options = buildUrl(options);
-	var url = options + txnHash;
+module.exports.getInfoByAddress = function(address, onResult){
+	var url = EndpointBuilder.allInfoByAddress(address);
 	rest.getJson(url, onResult);
 };
 
-module.exports.buildTxn = function(options, address, onResult){
-	var options = buildUrl(options);
-	var url = options + address + '?format=json';
+module.exports.getReceivedByAddress = function(address, onResult){
+	//var c = confirmations || 2;
+	var url = EndpointBuilder.getReceivedUrl(address, 2);
 	rest.getJson(url, onResult);
-};
+}

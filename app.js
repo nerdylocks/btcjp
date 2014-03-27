@@ -36,7 +36,8 @@ var txn = require('./factory/txn.js');
  * Routes
  */
 // Index Page
-app.get('/:address', txn.output);
+//app.get('/:address', txn.output);
+app.get('/test/:address', txn.checkForNewTx);
 
 /*
  * Start it up
