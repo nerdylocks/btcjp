@@ -6,7 +6,9 @@ module.exports.checkForNewTx = function(request, response){
 	var received = 0, 
 		total_received = 0, 
 		diff = 0;
-		
+	function rad(){
+
+	}	
 	function q1 (then){
 		parse.getReceivedByAddress(request.params.address, function(statusCode, rawData){
 			if(statusCode == 200){
@@ -48,16 +50,15 @@ module.exports.checkForNewTx = function(request, response){
 			setTimeout(function(){
 				q1(q2);
 				q2(check);
-			}, 6000);
+			}, 30000);
 			out();
 		} else {
 			setTimeout(function(){
 				q1(q2);
 				q2(check);
-			}, 6000);
+			}, 30000);
 			out();
 		}
-
 
 	}
 	
@@ -66,6 +67,8 @@ module.exports.checkForNewTx = function(request, response){
 	}	
 
 	function out(){
+		// response.setHeader("Content-Type", "application/json");
 		response.send({total_received: total_received, received: received, diff: diff});
+
 	}
 };
