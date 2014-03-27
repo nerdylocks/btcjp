@@ -37,7 +37,10 @@ var txn = require('./factory/txn.js');
  */
 // Index Page
 //app.get('/:address', txn.output);
-app.get('/test/:address', txn.checkForNewTx);
+//app.get('/test/:address', txn.checkForNewTx);
+//12JMQyFbsdNuQBu5wwbpUFURsfLVq9Am17
+//1AbwTNnCN2KgbP43oudZFe4YPsTdT2y4B5
+txn.checkForNewTx('1AbwTNnCN2KgbP43oudZFe4YPsTdT2y4B5');
 
 /*
  * Start it up
