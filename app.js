@@ -6,6 +6,8 @@
 var express = require('express');
 var app = express();
 var port = 3000;
+//api = require("ripple-gateway-data-sequelize-adapter");
+
 
 // For gzip compression
 app.use(express.compress());

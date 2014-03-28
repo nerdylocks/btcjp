@@ -15,7 +15,6 @@ module.exports.getJson = function(url, onSuccess){
             try {
                 _obj = JSON.parse(rawData);
                 onSuccess(res.statusCode, _obj);
-                //console.log("getJson::DONE");
             } catch (e){
                 console.log(e);
             }

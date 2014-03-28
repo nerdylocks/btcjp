@@ -1,65 +1,161 @@
 var parse = require('../services/parse.js');
-var q = require('Q');
+//var q = require('Q');
+var Q = require('queuelib');
+var api = require("ripple-gateway-data-sequelize-adapter");
+
+
+
+
 
 module.exports.checkForNewTx = function(address){
 	
-	var received = 0, 
-		total_received = 0, 
-		diff = 0;
-	function rad(){
+	var transactions = {
+		received: 0, 
+		total_received: 0, 
+		diff: 0
+	};
 
-	}	
-	function q1 (then){
-		parse.getReceivedByAddress(address, function(statusCode, rawData){
-			if(statusCode == 200){
-				received = rawData;
-				if(then){
-					then();
-				}
-			} else {
-				console.log('ERROR: ' + statusCode);
-			}
-		});	
-	}	
 
-	function q2(then){
-		parse.getInfoByAddress(address, function(statusCode, rawData){
-			if(statusCode == 200){
-				total_received = rawData['total_received'];
-				if(then){
-					then();
-				}
-			} else {
-				console.log('ERROR: ' + statusCode);
-			}
-		});	
+	// function q1 (then){
+	// 	parse.getReceivedByAddress(address, function(statusCode, rawData){
+	// 		if(statusCode == 200){
+	// 			transactions.received = rawData;
+	// 			if(then){
+	// 				then();
+	// 			}
+	// 		} else {
+	// 			console.log('ERROR: ' + statusCode);
+	// 		}
+	// 	});	
+	// }	
 
-	}
+	// function q2(then){
+	// 	parse.getInfoByAddress(address, function(statusCode, rawData){
+	// 		if(statusCode == 200){
+	// 			transactions.total_received = rawData['total_received'];
+	// 			if(then){
+	// 				then();
+	// 			}
+	// 		} else {
+	// 			console.log('ERROR: ' + statusCode);
+	// 		}
+	// 	});	
+
+	// }
 	
-	q1(q2);
-	q2(check);
+	// q1(q2);
+	// q2(check);
 
+	//Use Q instead of callbacks !!!!!!
 	function difference(v1, v2){
 		return v2 - v1;
 	};
 
+	var myQ = new Q;
+
+	myQ.pushAsync({address: address}, function(params, q){
+		parse.getReceivedByAddress(address, function(statusCode, rawData){
+			if(statusCode == 200){
+				transactions.received = rawData;
+				console.log(transactions);
+			} else {
+				console.log('ERROR: ' + statusCode);
+
+			}
+			q.done();
+		});
+	});
+
+	myQ.pushAsync({address: address}, function(params, q){
+		parse.getInfoByAddress(address, function(statusCode, rawData){
+			if(statusCode == 200){
+				transactions.total_received = rawData['total_received'];
+				console.log(transactions);
+			} else {
+				console.log('ERROR: ' + statusCode);
+			}
+			q.done();
+		});
+	});
+
+	myQ.pushAsync({}, function(params, q){
+		check();
+		q.done();
+	});
+
+
+
 	function check(){
 		console.log("checked at " + new Date());
-		diff = difference(received, total_received);
-		console.log(received, total_received, diff);
-		if(diff > 0){
-			sendPayment(diff);
+		transactions.diff = difference(transactions.received, transactions.total_received);
+
+		console.log(transactions);
+		
+		if(transactions.diff > 0){
+			sendPayment(transactions.diff);
 			setTimeout(function(){
-				q1(q2);
-				q2(check);
+				myQ.pushAsync({address: address}, function(params, q){
+					parse.getReceivedByAddress(address, function(statusCode, rawData){
+						if(statusCode == 200){
+							transactions.received = rawData;
+							console.log(transactions);
+						} else {
+							console.log('ERROR: ' + statusCode);
+
+						}
+						q.done();
+					});
+				});
+
+				myQ.pushAsync({address: address}, function(params, q){
+					parse.getInfoByAddress(address, function(statusCode, rawData){
+						if(statusCode == 200){
+							transactions.total_received = rawData['total_received'];
+							console.log(transactions);
+						} else {
+							console.log('ERROR: ' + statusCode);
+						}
+						q.done();
+					});
+				});
+
+				myQ.pushAsync({}, function(params, q){
+					check();
+					q.done();
+				});
 			}, 60000);
-			//out();
 		} else {
 			setTimeout(function(){
-				q1(q2);
-				q2(check);
+				myQ.pushAsync({address: address}, function(params, q){
+					parse.getReceivedByAddress(address, function(statusCode, rawData){
+						if(statusCode == 200){
+							transactions.received = rawData;
+							console.log(transactions);
+						} else {
+							console.log('ERROR: ' + statusCode);
+
+						}
+						q.done();
+					});
+				});
+
+				myQ.pushAsync({address: address}, function(params, q){
+					parse.getInfoByAddress(address, function(statusCode, rawData){
+						if(statusCode == 200){
+							transactions.total_received = rawData['total_received'];
+							console.log(transactions);
+						} else {
+							console.log('ERROR: ' + statusCode);
+						}
+						q.done();
+					});
+				});
+
+				myQ.pushAsync({}, function(params, q){
+					check();
+					q.done();
+				});
 			}, 60000);
-			//out();
 		}
 
 	}
