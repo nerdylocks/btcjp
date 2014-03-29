@@ -1,0 +1,14 @@
+{
+	"btc_inbound" : "1AbwTNnCN2KgbP43oudZFe4YPsTdT2y4B5",
+	"xrp_deliver" : "r456",
+	"xrp_fund" : "r123",
+	"xrp_fund_secret" : "sXYZ",
+	"discount_percentage" : 10,
+	"btc_receive_notify" : ["abiy@rippple.com"],
+	"xrp_sent_notify" : ["abiy@rippple.com"],
+	"sane_price_min" : 20000,
+	"sane_price_max" : 40000,
+	"xrp_low_balance_warning" : 100000,
+	"xrp_low_balance_email" : ["abiy@rippple.com"],
+	"number_of_confirmations": 2
+}
