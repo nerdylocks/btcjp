@@ -21,11 +21,7 @@ module.exports.checkForNewTx = function(address){
 		this.ripple_transaction_id = config.ripple_transaction_id;
 	}
 	
-	var transaction = new Txn({
-		amount: 0,
-		external_account_id: 12,
-		ripple_transaction_id: 23,
-	});
+	
 
 	var lastSent = 0;
 	
@@ -74,17 +70,21 @@ module.exports.checkForNewTx = function(address){
 				setInterval(function(){
 					Make.getReceivedByAddress(Make.getInfoByAddress);
 					Make.getInfoByAddress(Make.check);
-				}, 10000);
+				}, 60000);
 			} else {
 				setInterval(function(){
 					Make.getReceivedByAddress(Make.getInfoByAddress);
 					Make.getInfoByAddress(Make.check);
-				}, 10000);
+				}, 60000);
 			}
 		},
 		queueTxn: function(payment){
 			var toSend = payment;
-			//var txn.amount = payment;
+			var transaction = new Txn({
+				amount: payment,
+				external_account_id: 21,
+				ripple_transaction_id: 3,
+			});
 			if(lastSent != toSend) {			
 				console.log('SUBMITTING TO QUEUE...', payment);	
 				db.externalTransactions.create(transaction, function(transaction){

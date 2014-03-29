@@ -11,7 +11,7 @@ var EndpointBuilder = {
 };
 
 var LocalEndpoints = {
-	btc_ddress: function(address) {
+	btc_address: function(address) {
 		return 'http://localhost:3333/json/'+address+'.json';
 	},
 	recent: function(address){
@@ -21,7 +21,7 @@ var LocalEndpoints = {
 
 module.exports.getInfoByAddress = function(address, onResult){
 	//var url = EndpointBuilder.allInfoByAddress(address);
-	var url = LocalEndpoints.btc_ddress(address);
+	var url = LocalEndpoints.btc_address(address);
 	rest.getJson(url, onResult);
 };
 
