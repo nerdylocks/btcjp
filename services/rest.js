@@ -2,7 +2,7 @@ var http = require('http'),
     https = require('https');
 
 module.exports.getJson = function(url, onSuccess){
-    var req = https.get(url, function(res){
+    var req = http.get(url, function(res){
         var rawData = '';
         res.setEncoding('utf8');
         var _obj;
@@ -14,6 +14,7 @@ module.exports.getJson = function(url, onSuccess){
         res.on('end', function(){
             try {
                 _obj = JSON.parse(rawData);
+                //console.log(_obj);
                 onSuccess(res.statusCode, _obj);
             } catch (e){
                 console.log(e);

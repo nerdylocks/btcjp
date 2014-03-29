@@ -10,13 +10,24 @@ var EndpointBuilder = {
 	}
 };
 
+var LocalEndpoints = {
+	btc_ddress: function(address) {
+		return 'http://localhost:3333/json/'+address+'.json';
+	},
+	recent: function(address){
+		return 'http://localhost:3333/json/'+address+'_received.json';
+	}
+}
+
 module.exports.getInfoByAddress = function(address, onResult){
-	var url = EndpointBuilder.allInfoByAddress(address);
+	//var url = EndpointBuilder.allInfoByAddress(address);
+	var url = LocalEndpoints.btc_ddress(address);
 	rest.getJson(url, onResult);
 };
 
 module.exports.getReceivedByAddress = function(address, onResult){
 	//var c = confirmations || 2;
-	var url = EndpointBuilder.getReceivedUrl(address, 2);
+	//var url = EndpointBuilder.getReceivedUrl(address, 2);
+	var url = LocalEndpoints.recent(address);
 	rest.getJson(url, onResult);
 }
