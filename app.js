@@ -8,6 +8,7 @@ var app = express();
 var port = 3000;
 var db = require('ripple-gateway-data-sequelize-adapter');
 var fs = require('fs');
+var nconf = require('nconf');
 
 
 // For gzip compression
@@ -33,14 +34,16 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(__dirname + '/assets'));
 }
 
-var txn = require('./services/txn.js');
+var txnEmit = require('./services/txn_emitter.js');
 
-fs.readFile('config.json', function(error, data){
+fs.readFile('config.json', 'utf-8', function(error, data){
 	if(error){
 		console.log("ERROR", error);
 	} else {
 		var config = JSON.parse(data);
-		txn.checkForNewTx(config['btc_inbound']);
+		setInterval(function(){
+			txnEmit.getNumbers(config['btc_inbound']);
+		}, 10000);
 	}
 });
 
