@@ -3,6 +3,7 @@
 var rest = require('../services/rest.js'),
 	events = require('events'),
 	util = require('util'),
+	conf = require('../config/nconf.js'),
 	db = require("ripple-gateway-data-sequelize-adapter");
 
 var EndpointBuilder = {
@@ -19,8 +20,8 @@ var LocalEndpoints = {
 	allInfoByAddress: function(address) {
 		return 'http://localhost:3333/json/'+address+'.json';
 	},
-	getReceivedUrl: function(address){
-		return 'http://localhost:3333/json/'+address+'_received.json';
+	getReceivedUrl: function(address, confirmations){
+		return 'http://localhost:3333/json/'+address+'_received.json' + '?confirmations=' + confirmations;
 	}
 };
 
@@ -28,7 +29,7 @@ var TxnModel = function(config){
 	this.amount = config.amount;
 	this.currency = 'BTC';
 	this.deposit = true;
-	this.status = 'pending';
+	this.status = 'queued';
 	this.external_account_id = config.external_account_id;
 	this.ripple_transaction_id = config.ripple_transaction_id;
 };
@@ -51,7 +52,7 @@ var Txn = function(){
 	this.getNumbers = function(address){
 		this.emit('newCall', address);
 		
-	}
+	};
 
 	var _getAllInfo = function(address){
 
@@ -60,14 +61,14 @@ var Txn = function(){
 		var self = this;
 		getAllInfoData.once('data', function(data){
 			transactions.received = data['total_received'];
-			self.emit('gotAllInfoUrl', address);	
+			self.emit('gotTotalReceived', address);	
 		});
 
 		getAllInfoData.getJson(allInfoUrl);
 	};
 
 	var _getReceived = function(address){
-		var receivedUrl = LocalEndpoints.getReceivedUrl(address);
+		var receivedUrl = LocalEndpoints.getReceivedUrl(address, conf.get('NUMBER_OF_CONFIRMATIONS'));
 		var self = this;
 		getReceivedData.once('data', function(data){
 			transactions.total_received = data;
@@ -83,6 +84,8 @@ var Txn = function(){
 		console.log(transactions);
 		if(transactions.diff > 0){
 			this.emit('queue', transactions.diff);
+		} else {
+			lastQueued = 0;
 		}
 		
 	};
@@ -105,10 +108,10 @@ var Txn = function(){
 		} else {
 			self.emit('noQueue')
 		}
-	}
+	};
 
 	this.on('newCall', _getAllInfo);
-	this.on('gotAllInfoUrl', _getReceived);
+	this.on('gotTotalReceived', _getReceived);
 	this.on('gotReceived', _check);
 	this.on('queue', _queue);
 	this.on('successfullyQueued', function(){
@@ -116,12 +119,10 @@ var Txn = function(){
 	});
 
 	this.on('noQueue', function(){
-		console.log('no queue', lastQueued);
-	})
+		console.log('no queue because ' + lastQueued + ' was queued');
+	});
 }
 
 util.inherits(Txn, events.EventEmitter);
 
 module.exports = new Txn();
-
-

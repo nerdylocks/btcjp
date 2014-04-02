@@ -3,13 +3,11 @@
 /*
  * Express Dependencies
  */
-var express = require('express');
-var app = express();
-var port = 3000;
-var db = require('ripple-gateway-data-sequelize-adapter');
-var fs = require('fs');
-var nconf = require('nconf');
-
+var express = require('express'),
+	app = express(),
+	port = 3000,
+	fs = require('fs'),
+	conf = require('./config/nconf.js');
 
 // For gzip compression
 app.use(express.compress());
@@ -35,16 +33,18 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 var txnEmit = require('./services/txn_emitter.js');
+var getExchangeRate = require('./services/get_exchange_rate.js');
 
-fs.readFile('config.json', 'utf-8', function(error, data){
-	if(error){
-		console.log("ERROR", error);
-	} else {
-		var config = JSON.parse(data);
-		setInterval(function(){
-			txnEmit.getNumbers(config['btc_inbound']);
-		}, 10000);
-	}
+var btcInboundAddress = conf.get('BTC_INBOUND');
+
+setInterval(function(){
+	txnEmit.getNumbers(btcInboundAddress);
+}, 10000);
+
+getExchangeRate.getRate();
+
+getExchangeRate.on('gotEchangeRate', function(exchangeRage){
+	console.log(exchangeRage);
 });
 
 /*
@@ -52,3 +52,4 @@ fs.readFile('config.json', 'utf-8', function(error, data){
  */
 app.listen(process.env.PORT || port);
 console.log('Express started on port ' + port);
+//TODO: Send an email server started
